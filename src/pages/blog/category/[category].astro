@@ -1,25 +1,32 @@
 ---
-import BlogPostRow from '../../components/BlogPostRow.astro';
-import BlogSidebar from '../../components/BlogSidebar.astro';
-import BaseHead from '../../components/layout/BaseHead.astro';
-import Footer from '../../components/layout/Footer.astro';
-import Header from '../../components/layout/Header.astro';
-import { SITE_CONFIG } from '../../config/site';
-import { getBlogPosts } from '../../utils/blog';
+import BlogPostRow from '../../../components/BlogPostRow.astro';
+import BlogSidebar from '../../../components/BlogSidebar.astro';
+import BaseHead from '../../../components/layout/BaseHead.astro';
+import Footer from '../../../components/layout/Footer.astro';
+import Header from '../../../components/layout/Header.astro';
+import { BLOG_CATEGORY_IDS, SITE_CONFIG } from '../../../config/site';
+import { getBlogPosts } from '../../../utils/blog';
 
-const posts = await getBlogPosts();
+export async function getStaticPaths() {
+  return BLOG_CATEGORY_IDS.map((category) => ({ params: { category } }));
+}
 
-const allCategory = SITE_CONFIG.blogCategories.find(
-  (category) => category.id === 'all',
+const { category } = Astro.params;
+
+const currentCategory = SITE_CONFIG.blogCategories.find(
+  (item) => item.id === category,
 );
+
+const allPosts = await getBlogPosts();
+const posts = allPosts.filter((post) => post.category === category);
 ---
 
 <!doctype html>
 <html lang="ko">
   <head>
     <BaseHead
-      title={`Notes | ${SITE_CONFIG.site.title}`}
-      description="Robot Manipulation, VLA, Robotics 연구와 학습 기록입니다."
+      title={`${currentCategory?.label} | Notes | ${SITE_CONFIG.site.title}`}
+      description={currentCategory?.description ?? ''}
     />
   </head>
 
@@ -28,19 +35,25 @@ const allCategory = SITE_CONFIG.blogCategories.find(
 
     <main class="blog-main">
       <header class="blog-header">
-        <p class="blog-kicker">ALL POSTS</p>
+        <p class="blog-kicker">NOTES</p>
         <div class="blog-heading-row">
-          <h1>Notes</h1>
+          <h1>{currentCategory?.label}</h1>
           <p class="post-count">{posts.length} posts</p>
         </div>
-        <p class="blog-description">{allCategory?.description}</p>
+        <p class="blog-description">{currentCategory?.description}</p>
       </header>
 
       <div class="blog-layout">
-        <BlogSidebar posts={posts} activeCategory="all" />
+        <BlogSidebar posts={allPosts} activeCategory={category} />
 
         <div class="post-list">
-          {posts.map((post) => <BlogPostRow post={post} />)}
+          {
+            posts.length > 0 ? (
+              posts.map((post) => <BlogPostRow post={post} />)
+            ) : (
+              <p class="empty-message">아직 이 카테고리에 작성된 글이 없습니다.</p>
+            )
+          }
         </div>
       </div>
     </main>
@@ -107,6 +120,14 @@ const allCategory = SITE_CONFIG.blogCategories.find(
 
   .post-list {
     border-top: 1px solid var(--line);
+  }
+
+  .empty-message {
+    margin: 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
   }
 
   @media (max-width: 760px) {

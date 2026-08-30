@@ -1,10 +1,6 @@
-# Astro Starter Kit: Blog
+# Lee Geonwoo — Portfolio & Blog
 
-```sh
-npm create astro@latest -- --template blog
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Personal portfolio and blog built with Astro. Started from the official blog starter kit.
 
 Features:
 
@@ -21,13 +17,22 @@ Inside of your Astro project, you'll see the following folders and files:
 
 ```text
 ├── public/
+│   └── images/          # unprocessed static images referenced by URL (e.g. profile photo)
 ├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
+│   ├── assets/           # images processed by astro:assets (e.g. OG fallback image)
+│   ├── components/
+│   │   ├── layout/       # BaseHead, Header, Footer — used on every page
+│   │   └── *.astro       # page-level content components (ProfileCard, FormattedDate, ...)
+│   ├── config/
+│   │   └── site.ts       # SITE_CONFIG — single source of truth for site content/data
+│   ├── content/
+│   │   └── blog/         # blog post Markdown/MDX files
+│   ├── content.config.ts # content collection schema (blog category ids come from SITE_CONFIG)
+│   ├── layouts/
+│   ├── pages/
+│   └── utils/            # small shared helpers (e.g. formatDate)
 ├── astro.config.mjs
+├── wrangler.jsonc
 ├── README.md
 ├── package.json
 └── tsconfig.json
@@ -35,9 +40,9 @@ Inside of your Astro project, you'll see the following folders and files:
 
 Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
 The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+
+Site-wide content and data (profile info, navigation, blog categories, featured projects) live in `src/config/site.ts`. New content/data requirements should extend `SITE_CONFIG` there rather than being hardcoded into a page or component.
 
 Any static assets, like images, can be placed in the `public/` directory.
 

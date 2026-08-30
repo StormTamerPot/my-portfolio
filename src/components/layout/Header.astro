@@ -1,0 +1,125 @@
+---
+import { SITE_CONFIG } from '../../config/site';
+
+const currentPath = Astro.url.pathname;
+const { navigation } = SITE_CONFIG;
+
+// A nav item stays active across its whole section, so /blog/<post> and
+// /blog/category/<id> still highlight "Blog". "/" only matches exactly.
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-name" href="/" aria-label="Lee Geonwoo 홈으로 이동">
+      Lee Geonwoo
+    </a>
+
+    <nav class="site-nav" aria-label="주요 메뉴">
+      {
+        navigation.map((item) => (
+          <a
+            href={item.href}
+            class={isActive(item.href) ? 'active' : ''}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #e8ebef;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(100% - 4rem, var(--page-width));
+    min-height: 5.25rem;
+    margin: 0 auto;
+  }
+
+  .site-name {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+  }
+
+  .site-nav a {
+    position: relative;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .site-nav a::after {
+    position: absolute;
+    right: 0;
+    bottom: -0.65rem;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    content: '';
+    opacity: 0;
+    transform: scaleX(0.6);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .site-nav a:hover,
+  .site-nav a:focus-visible,
+  .site-nav a.active {
+    color: var(--text);
+  }
+
+  .site-nav a:hover::after,
+  .site-nav a:focus-visible::after,
+  .site-nav a.active::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  @media (max-width: 38rem) {
+    .header-inner {
+      width: min(100% - 2rem, var(--page-width));
+      min-height: 4.25rem;
+    }
+
+    .site-name {
+      font-size: 1.1rem;
+    }
+
+    .site-nav {
+      gap: 1rem;
+    }
+
+    .site-nav a {
+      font-size: 0.82rem;
+    }
+  }
+</style>

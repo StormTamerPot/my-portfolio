@@ -1,0 +1,196 @@
+---
+import { SITE_CONFIG } from '../config/site';
+
+const { profile, links } = SITE_CONFIG;
+---
+
+<section class="profile-hero">
+  <div class="profile-image-area">
+    <div class="profile-image-ring">
+      <img
+        class="profile-image"
+        src={profile.image}
+        alt={`${profile.name} 프로필 사진`}
+      />
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <p class="profile-label">{profile.label}</p>
+
+    <h1>{profile.name}</h1>
+
+    <p class="profile-role">{profile.role}</p>
+
+    {
+      profile.description.map((paragraph, index) => (
+        <p class:list={['profile-description', { 'profile-description-secondary': index > 0 }]}>
+          {paragraph}
+        </p>
+      ))
+    }
+
+    <div class="profile-contacts">
+      <a class="contact-pill" href={links.github} target="_blank" rel="noreferrer">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+      <a class="contact-pill" href={`mailto:${profile.email}`}>{profile.email}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .profile-hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(3rem, 7vw, 7rem);
+    padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(3.5rem, 7vw, 5rem);
+  }
+
+  .profile-image-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profile-image-ring {
+    width: clamp(13.5rem, 22vw, 18rem);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid #dce3ea;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1.25rem 3.25rem rgba(30, 43, 68, 0.12);
+    padding: 0.45rem;
+  }
+
+  .profile-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .profile-content {
+    max-width: 43rem;
+  }
+
+  .profile-label {
+    margin: 0 0 1.1rem;
+    color: #7b8796;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .profile-content h1 {
+    margin: 0;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: clamp(3.3rem, 5.7vw, 5.25rem);
+    font-weight: 700;
+    letter-spacing: -0.065em;
+    line-height: 0.95;
+  }
+
+  .profile-role {
+    margin: 1.35rem 0 0.8rem;
+    color: #3f5269;
+    font-size: 1.18rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .profile-description {
+    max-width: 39rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .profile-description-secondary {
+    margin-top: 0.85rem;
+  }
+
+  .profile-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+  }
+
+  .contact-pill {
+    border: 1px solid #dce3ea;
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.5rem 0.95rem;
+    text-decoration: none;
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+
+  .contact-pill span {
+    margin-left: 0.2rem;
+    color: var(--accent);
+  }
+
+  .contact-pill:hover,
+  .contact-pill:focus-visible {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  @media (max-width: 46rem) {
+    .profile-hero {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 1.5rem;
+      padding: 2.5rem 0 3.5rem;
+      text-align: center;
+    }
+
+    .profile-image-area {
+      justify-content: center;
+    }
+
+    .profile-image-ring {
+      width: 8.5rem;
+    }
+
+    .profile-content {
+      max-width: 26rem;
+    }
+
+    .profile-label {
+      margin-bottom: 0.85rem;
+    }
+
+    .profile-content h1 {
+      font-size: clamp(2.6rem, 12vw, 3.4rem);
+    }
+
+    .profile-role {
+      margin-top: 0.9rem;
+      font-size: 1.05rem;
+    }
+
+    .profile-description {
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 0.96rem;
+    }
+
+    .profile-description-secondary {
+      margin-top: 0.75rem;
+    }
+
+    .profile-contacts {
+      justify-content: center;
+    }
+  }
+</style>

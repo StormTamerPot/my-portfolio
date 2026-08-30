@@ -1,0 +1,119 @@
+---
+import { SITE_CONFIG } from '../../config/site';
+
+const { profile, links, navigation } = SITE_CONFIG;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <a class="footer-name" href="/">{profile.name}</a>
+
+      <nav class="footer-nav" aria-label="푸터 메뉴">
+        {navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {currentYear} {profile.name}. All rights reserved.</p>
+
+      <div class="footer-links">
+        <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
+        <a href={`mailto:${profile.email}`}>Email</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 0;
+    background: #202a3d;
+    color: #d9dfeb;
+  }
+
+  .footer-inner {
+    width: min(100% - 4rem, var(--page-width));
+    margin: 0 auto;
+    padding: 2.5rem 0 1.5rem;
+  }
+
+  .footer-top,
+  .footer-bottom,
+  .footer-links,
+  .footer-nav {
+    display: flex;
+    align-items: center;
+  }
+
+  .footer-top {
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer-name {
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+  }
+
+  .footer-nav {
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .footer-nav a,
+  .footer-links a {
+    color: #b9c4d5;
+    font-size: 0.82rem;
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .footer-nav a:hover,
+  .footer-nav a:focus-visible,
+  .footer-links a:hover,
+  .footer-links a:focus-visible {
+    color: #ffffff;
+  }
+
+  .footer-bottom {
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid rgba(217, 223, 235, 0.16);
+    padding-top: 1.25rem;
+  }
+
+  .footer-bottom p {
+    margin: 0;
+    color: #8f9caf;
+    font-size: 0.75rem;
+  }
+
+  .footer-links {
+    gap: 1rem;
+  }
+
+  @media (max-width: 38rem) {
+    .footer-inner {
+      width: min(100% - 2rem, var(--page-width));
+      padding-top: 2rem;
+    }
+
+    .footer-top,
+    .footer-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .footer-top {
+      gap: 1.25rem;
+      padding-bottom: 1.5rem;
+    }
+  }
+</style>

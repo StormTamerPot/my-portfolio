@@ -1,20 +1,30 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
 
 const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-	// Type-check frontmatter using a schema
-	schema: ({ image }) =>
-		z.object({
-			title: z.string(),
-			description: z.string(),
-			// Transform string to Date object
-			pubDate: z.coerce.date(),
-			updatedDate: z.coerce.date().optional(),
-			heroImage: z.optional(image()),
-		}),
+  // Posts are organised as:
+  //   src/content/blog/<category-id>/<slug>/index.md
+  // The folder name IS the category, so there is no `category` frontmatter
+  // field to keep in sync. See `src/utils/blog.ts` for how it is read back.
+  //
+  // Each post gets its own folder so it can carry its own images — see
+  // "Adding images to a post" in that same file's doc comment.
+  loader: glob({
+    base: './src/content/blog',
+    pattern: '**/*.{md,mdx}',
+  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      pubDate: z.coerce.date(),
+      updatedDate: z.coerce.date().optional(),
+      // A local file next to this post, e.g. heroImage: './cover.jpg'
+      heroImage: image().optional(),
+      // Set `featured: true` to surface the post in "Featured projects" on the home page.
+      featured: z.boolean().default(false),
+      tags: z.array(z.string()).default([]),
+    }),
 });
 
 export const collections = { blog };
