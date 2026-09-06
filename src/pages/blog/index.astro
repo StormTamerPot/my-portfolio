@@ -12,7 +12,7 @@ const allCategory = SITE_CONFIG.blogCategories.find(
 
 <BlogListing
   pageTitle={`Notes | ${SITE_CONFIG.site.title}`}
-  pageDescription="Robot Manipulation, VLA, Robotics 연구와 학습 기록입니다."
+  pageDescription={allCategory?.description ?? ''}
   kicker="ALL POSTS"
   heading="Notes"
   description={allCategory?.description}
