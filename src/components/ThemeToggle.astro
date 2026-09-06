@@ -1,0 +1,71 @@
+---
+---
+
+<button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크 모드 전환">
+  <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+  <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" />
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    border-color: var(--text);
+    background: var(--surface-muted);
+  }
+
+  .icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .icon-moon {
+    display: none;
+  }
+</style>
+
+<script>
+  const button = document.getElementById('theme-toggle');
+  const sunIcon = button?.querySelector('.icon-sun') as HTMLElement | null;
+  const moonIcon = button?.querySelector('.icon-moon') as HTMLElement | null;
+
+  function syncIcons() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (sunIcon) sunIcon.style.display = isDark ? 'none' : 'block';
+    if (moonIcon) moonIcon.style.display = isDark ? 'block' : 'none';
+  }
+
+  syncIcons();
+
+  button?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // localStorage unavailable (private mode, disabled storage) — the
+      // toggle still works for the current page view.
+    }
+    syncIcons();
+  });
+</script>

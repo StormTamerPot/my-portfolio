@@ -21,7 +21,7 @@ const blog = defineCollection({
       updatedDate: z.coerce.date().optional(),
       // A local file next to this post, e.g. heroImage: './cover.jpg'
       heroImage: image().optional(),
-      // Set `featured: true` to surface the post in "Featured projects" on the home page.
+      // Marks a post as a highlight; not currently surfaced anywhere in the UI.
       featured: z.boolean().default(false),
       tags: z.array(z.string()).default([]),
     }),

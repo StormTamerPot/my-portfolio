@@ -1,6 +1,6 @@
 ---
+import FormattedDate from './FormattedDate.astro';
 import type { BlogPost } from '../utils/blog';
-import { formatDate } from '../utils/formatDate';
 
 interface Props {
   post: BlogPost;
@@ -12,9 +12,7 @@ const { post } = Astro.props;
 <a class="post-row" href={post.href}>
   <div class="post-meta">
     <span>{post.categoryLabel}</span>
-    <time datetime={post.entry.data.pubDate.toISOString()}>
-      {formatDate(post.entry.data.pubDate)}
-    </time>
+    <FormattedDate date={post.entry.data.pubDate} />
   </div>
 
   <div class="post-content">

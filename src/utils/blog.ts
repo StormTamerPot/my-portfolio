@@ -80,11 +80,6 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     );
 }
 
-/** Posts flagged with `featured: true`, newest first. */
-export async function getFeaturedPosts(): Promise<BlogPost[]> {
-  return (await getBlogPosts()).filter((post) => post.entry.data.featured);
-}
-
 /** Every unique tag used across all posts, in first-seen (newest-post-first) order. */
 export async function getAllTags(): Promise<string[]> {
   const posts = await getBlogPosts();
@@ -93,28 +88,4 @@ export async function getAllTags(): Promise<string[]> {
     for (const tag of post.entry.data.tags) tags.add(tag);
   }
   return [...tags];
-}
-
-/**
- * Builds a short plain-text excerpt from the start of a post's body,
- * used as the subtitle on the home page's featured cards.
- */
-export function getExcerpt(post: BlogPost, maxLength = 120): string {
-  const plain = (post.entry.body ?? '')
-    .replace(/```[\s\S]*?```/g, ' ') // fenced code blocks
-    .replace(/\$\$[\s\S]*?\$\$/g, ' ') // display math
-    .replace(/\$[^$\n]*\$/g, ' ') // inline math
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links -> text
-    .replace(/^\s*#{1,6}\s+.*$/gm, ' ') // headings
-    .replace(/^\s*[-*+]\s+/gm, ' ') // list markers
-    .replace(/[*_`>#]/g, '') // leftover markdown syntax
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (plain.length <= maxLength) return plain;
-  const truncated = plain.slice(0, maxLength);
-  const lastSpace = truncated.lastIndexOf(' ');
-  const cut = lastSpace > maxLength * 0.6 ? truncated.slice(0, lastSpace) : truncated;
-  return `${cut.trimEnd()}…`;
 }

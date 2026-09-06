@@ -1,9 +1,5 @@
 ---
-import BlogPostRow from '../../../components/BlogPostRow.astro';
-import BlogSidebar from '../../../components/BlogSidebar.astro';
-import BaseHead from '../../../components/layout/BaseHead.astro';
-import Footer from '../../../components/layout/Footer.astro';
-import Header from '../../../components/layout/Header.astro';
+import BlogListing from '../../../layouts/BlogListing.astro';
 import { BLOG_CATEGORY_IDS, SITE_CONFIG } from '../../../config/site';
 import { getBlogPosts } from '../../../utils/blog';
 
@@ -21,128 +17,14 @@ const allPosts = await getBlogPosts();
 const posts = allPosts.filter((post) => post.category === category);
 ---
 
-<!doctype html>
-<html lang="ko">
-  <head>
-    <BaseHead
-      title={`${currentCategory?.label} | Notes | ${SITE_CONFIG.site.title}`}
-      description={currentCategory?.description ?? ''}
-    />
-  </head>
-
-  <body>
-    <Header />
-
-    <main class="blog-main">
-      <header class="blog-header">
-        <p class="blog-kicker">NOTES</p>
-        <div class="blog-heading-row">
-          <h1>{currentCategory?.label}</h1>
-          <p class="post-count">{posts.length} posts</p>
-        </div>
-        <p class="blog-description">{currentCategory?.description}</p>
-      </header>
-
-      <div class="blog-layout">
-        <BlogSidebar posts={allPosts} activeCategory={category} />
-
-        <div class="post-list">
-          {
-            posts.length > 0 ? (
-              posts.map((post) => <BlogPostRow post={post} />)
-            ) : (
-              <p class="empty-message">아직 이 카테고리에 작성된 글이 없습니다.</p>
-            )
-          }
-        </div>
-      </div>
-    </main>
-
-    <Footer />
-  </body>
-</html>
-
-<style>
-  .blog-main {
-    width: min(100% - 4rem, var(--page-width));
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  .blog-header {
-    border-bottom: 1px solid var(--line);
-    padding: 3.5rem 0 2rem;
-  }
-
-  .blog-kicker {
-    margin: 0 0 0.9rem;
-    color: var(--accent);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-  }
-
-  .blog-heading-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1.5rem;
-  }
-
-  .blog-header h1 {
-    margin: 0;
-    font-size: clamp(2.4rem, 5vw, 3.6rem);
-    letter-spacing: -0.06em;
-    line-height: 1;
-  }
-
-  .post-count {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.84rem;
-    white-space: nowrap;
-  }
-
-  .blog-description {
-    max-width: 34rem;
-    margin: 1.1rem 0 0;
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-
-  .blog-layout {
-    display: grid;
-    grid-template-columns: 12rem minmax(0, 1fr);
-    gap: 3rem;
-    padding: 2.5rem 0 4rem;
-  }
-
-  .post-list {
-    border-top: 1px solid var(--line);
-  }
-
-  .empty-message {
-    margin: 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--muted);
-    padding: 1.5rem 0;
-    font-size: 0.9rem;
-  }
-
-  @media (max-width: 760px) {
-    .blog-main {
-      width: min(100% - 2rem, var(--page-width));
-    }
-
-    .blog-header {
-      padding-top: 2.5rem;
-    }
-
-    .blog-layout {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 0 3rem;
-    }
-  }
-</style>
+<BlogListing
+  pageTitle={`${currentCategory?.label} | Notes | ${SITE_CONFIG.site.title}`}
+  pageDescription={currentCategory?.description ?? ''}
+  kicker="NOTES"
+  heading={currentCategory?.label ?? ''}
+  description={currentCategory?.description}
+  sidebarPosts={allPosts}
+  activeCategory={category}
+  listPosts={posts}
+  emptyMessage="아직 이 카테고리에 작성된 글이 없습니다."
+/>

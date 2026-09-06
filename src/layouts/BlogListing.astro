@@ -1,0 +1,155 @@
+---
+import BlogPostRow from '../components/BlogPostRow.astro';
+import BlogSidebar from '../components/BlogSidebar.astro';
+import BaseHead from '../components/layout/BaseHead.astro';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import type { BlogPost } from '../utils/blog';
+
+interface Props {
+  pageTitle: string;
+  pageDescription: string;
+  kicker: string;
+  heading: string;
+  description?: string;
+  sidebarPosts: BlogPost[];
+  activeCategory: string;
+  listPosts: BlogPost[];
+  emptyMessage?: string;
+}
+
+const {
+  pageTitle,
+  pageDescription,
+  kicker,
+  heading,
+  description,
+  sidebarPosts,
+  activeCategory,
+  listPosts,
+  emptyMessage,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <BaseHead title={pageTitle} description={pageDescription} />
+  </head>
+
+  <body>
+    <Header />
+
+    <main class="blog-main">
+      <header class="blog-header">
+        <p class="blog-kicker">{kicker}</p>
+        <div class="blog-heading-row">
+          <h1>{heading}</h1>
+          <p class="post-count">{listPosts.length} posts</p>
+        </div>
+        {description && <p class="blog-description">{description}</p>}
+      </header>
+
+      <div class="blog-layout">
+        <BlogSidebar posts={sidebarPosts} activeCategory={activeCategory} />
+
+        <div class="post-list">
+          {
+            listPosts.length > 0 ? (
+              listPosts.map((post) => <BlogPostRow post={post} />)
+            ) : emptyMessage ? (
+              <p class="empty-message">{emptyMessage}</p>
+            ) : null
+          }
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .blog-main {
+    width: min(100% - 4rem, var(--page-width));
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .blog-header {
+    border-bottom: 1px solid var(--line);
+    padding: 3.5rem 0 2rem;
+  }
+
+  .blog-kicker {
+    margin: 0 0 0.9rem;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+  }
+
+  .blog-heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .blog-header h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    letter-spacing: -0.06em;
+    line-height: 1;
+  }
+
+  .post-count {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
+  .blog-description {
+    max-width: 34rem;
+    margin: 1.1rem 0 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .blog-layout {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 3rem;
+    padding: 2.5rem 0 4rem;
+  }
+
+  .post-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .empty-message {
+    margin: 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 760px) {
+    .blog-main {
+      width: min(100% - 2rem, var(--page-width));
+    }
+
+    .blog-header {
+      padding-top: 2.5rem;
+    }
+
+    .blog-layout {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem 0 3rem;
+    }
+  }
+</style>

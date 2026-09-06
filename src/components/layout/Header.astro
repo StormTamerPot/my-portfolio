@@ -1,4 +1,5 @@
 ---
+import ThemeToggle from '../ThemeToggle.astro';
 import { SITE_CONFIG } from '../../config/site';
 
 const currentPath = Astro.url.pathname;
@@ -16,19 +17,23 @@ const isActive = (href: string) =>
       Lee Geonwoo
     </a>
 
-    <nav class="site-nav" aria-label="주요 메뉴">
-      {
-        navigation.map((item) => (
-          <a
-            href={item.href}
-            class={isActive(item.href) ? 'active' : ''}
-            aria-current={isActive(item.href) ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
-        ))
-      }
-    </nav>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="주요 메뉴">
+        {
+          navigation.map((item) => (
+            <a
+              href={item.href}
+              class={isActive(item.href) ? 'active' : ''}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
@@ -39,9 +44,11 @@ const isActive = (href: string) =>
     right: 0;
     left: 0;
     z-index: 1000;
-    border-bottom: 1px solid #e8ebef;
-    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
     backdrop-filter: blur(12px);
+    transition: background-color 180ms ease, border-color 180ms ease;
   }
 
   .header-inner {
@@ -49,8 +56,14 @@ const isActive = (href: string) =>
     align-items: center;
     justify-content: space-between;
     width: min(100% - 4rem, var(--page-width));
-    min-height: 5.25rem;
+    min-height: var(--header-height);
     margin: 0 auto;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
   }
 
   .site-name {
@@ -107,7 +120,11 @@ const isActive = (href: string) =>
   @media (max-width: 38rem) {
     .header-inner {
       width: min(100% - 2rem, var(--page-width));
-      min-height: 4.25rem;
+      min-height: 3.75rem;
+    }
+
+    .header-right {
+      gap: 1rem;
     }
 
     .site-name {

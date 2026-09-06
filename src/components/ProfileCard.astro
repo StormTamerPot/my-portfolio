@@ -58,10 +58,10 @@ const { profile, links } = SITE_CONFIG;
     width: clamp(13.5rem, 22vw, 18rem);
     aspect-ratio: 1;
     overflow: hidden;
-    border: 1px solid #dce3ea;
+    border: 1px solid var(--line);
     border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 1.25rem 3.25rem rgba(30, 43, 68, 0.12);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
     padding: 0.45rem;
   }
 
@@ -80,7 +80,7 @@ const { profile, links } = SITE_CONFIG;
 
   .profile-label {
     margin: 0 0 1.1rem;
-    color: #7b8796;
+    color: var(--muted);
     font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -98,7 +98,7 @@ const { profile, links } = SITE_CONFIG;
 
   .profile-role {
     margin: 1.35rem 0 0.8rem;
-    color: #3f5269;
+    color: var(--text-secondary);
     font-size: 1.18rem;
     font-weight: 600;
     letter-spacing: -0.025em;
@@ -121,28 +121,6 @@ const { profile, links } = SITE_CONFIG;
     flex-wrap: wrap;
     gap: 0.6rem;
     margin-top: 1.75rem;
-  }
-
-  .contact-pill {
-    border: 1px solid #dce3ea;
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 0.5rem 0.95rem;
-    text-decoration: none;
-    transition: border-color 160ms ease, color 160ms ease;
-  }
-
-  .contact-pill span {
-    margin-left: 0.2rem;
-    color: var(--accent);
-  }
-
-  .contact-pill:hover,
-  .contact-pill:focus-visible {
-    border-color: var(--accent);
-    color: var(--text);
   }
 
   @media (max-width: 46rem) {

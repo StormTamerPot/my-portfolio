@@ -69,7 +69,6 @@ export const SITE_CONFIG = {
     ...BLOG_CATEGORY_IDS.map((id) => ({ id, ...BLOG_CATEGORY_META[id] })),
   ],
 
-  // Note: neither featured projects nor recent posts are listed here — both are
-  // read from the `blog` content collection (src/content/blog/). A post joins
-  // "Featured projects" by setting `featured: true` in its frontmatter.
+  // Note: posts are not listed here — they're read from the `blog` content
+  // collection (src/content/blog/).
 } as const;

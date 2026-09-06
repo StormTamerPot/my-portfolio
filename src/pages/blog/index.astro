@@ -1,9 +1,5 @@
 ---
-import BlogPostRow from '../../components/BlogPostRow.astro';
-import BlogSidebar from '../../components/BlogSidebar.astro';
-import BaseHead from '../../components/layout/BaseHead.astro';
-import Footer from '../../components/layout/Footer.astro';
-import Header from '../../components/layout/Header.astro';
+import BlogListing from '../../layouts/BlogListing.astro';
 import { SITE_CONFIG } from '../../config/site';
 import { getBlogPosts } from '../../utils/blog';
 
@@ -14,114 +10,13 @@ const allCategory = SITE_CONFIG.blogCategories.find(
 );
 ---
 
-<!doctype html>
-<html lang="ko">
-  <head>
-    <BaseHead
-      title={`Notes | ${SITE_CONFIG.site.title}`}
-      description="Robot Manipulation, VLA, Robotics 연구와 학습 기록입니다."
-    />
-  </head>
-
-  <body>
-    <Header />
-
-    <main class="blog-main">
-      <header class="blog-header">
-        <p class="blog-kicker">ALL POSTS</p>
-        <div class="blog-heading-row">
-          <h1>Notes</h1>
-          <p class="post-count">{posts.length} posts</p>
-        </div>
-        <p class="blog-description">{allCategory?.description}</p>
-      </header>
-
-      <div class="blog-layout">
-        <BlogSidebar posts={posts} activeCategory="all" />
-
-        <div class="post-list">
-          {posts.map((post) => <BlogPostRow post={post} />)}
-        </div>
-      </div>
-    </main>
-
-    <Footer />
-  </body>
-</html>
-
-<style>
-  .blog-main {
-    width: min(100% - 4rem, var(--page-width));
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  .blog-header {
-    border-bottom: 1px solid var(--line);
-    padding: 3.5rem 0 2rem;
-  }
-
-  .blog-kicker {
-    margin: 0 0 0.9rem;
-    color: var(--accent);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-  }
-
-  .blog-heading-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1.5rem;
-  }
-
-  .blog-header h1 {
-    margin: 0;
-    font-size: clamp(2.4rem, 5vw, 3.6rem);
-    letter-spacing: -0.06em;
-    line-height: 1;
-  }
-
-  .post-count {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.84rem;
-    white-space: nowrap;
-  }
-
-  .blog-description {
-    max-width: 34rem;
-    margin: 1.1rem 0 0;
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-
-  .blog-layout {
-    display: grid;
-    grid-template-columns: 12rem minmax(0, 1fr);
-    gap: 3rem;
-    padding: 2.5rem 0 4rem;
-  }
-
-  .post-list {
-    border-top: 1px solid var(--line);
-  }
-
-  @media (max-width: 760px) {
-    .blog-main {
-      width: min(100% - 2rem, var(--page-width));
-    }
-
-    .blog-header {
-      padding-top: 2.5rem;
-    }
-
-    .blog-layout {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 0 3rem;
-    }
-  }
-</style>
+<BlogListing
+  pageTitle={`Notes | ${SITE_CONFIG.site.title}`}
+  pageDescription="Robot Manipulation, VLA, Robotics 연구와 학습 기록입니다."
+  kicker="ALL POSTS"
+  heading="Notes"
+  description={allCategory?.description}
+  sidebarPosts={posts}
+  activeCategory="all"
+  listPosts={posts}
+/>

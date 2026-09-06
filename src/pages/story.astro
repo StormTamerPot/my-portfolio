@@ -111,7 +111,7 @@ const tags = await getAllTags();
 
   .bio-role {
     margin: 0.75rem 0 0;
-    color: #3f5269;
+    color: var(--text-secondary);
     font-size: 1.1rem;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -179,28 +179,6 @@ const tags = await getAllTags();
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-  }
-
-  .contact-pill {
-    border: 1px solid #dce3ea;
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 0.5rem 0.95rem;
-    text-decoration: none;
-    transition: border-color 160ms ease, color 160ms ease;
-  }
-
-  .contact-pill span {
-    margin-left: 0.2rem;
-    color: var(--accent);
-  }
-
-  .contact-pill:hover,
-  .contact-pill:focus-visible {
-    border-color: var(--accent);
-    color: var(--text);
   }
 
   @media (max-width: 720px) {

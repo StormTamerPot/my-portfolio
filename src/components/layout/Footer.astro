@@ -29,14 +29,16 @@ const currentYear = new Date().getFullYear();
 <style>
   .site-footer {
     margin-top: 0;
-    background: #202a3d;
-    color: #d9dfeb;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--text-secondary);
+    transition: background-color 180ms ease, border-color 180ms ease;
   }
 
   .footer-inner {
     width: min(100% - 4rem, var(--page-width));
     margin: 0 auto;
-    padding: 2.5rem 0 1.5rem;
+    padding: 2.5rem 0;
   }
 
   .footer-top,
@@ -50,13 +52,13 @@ const currentYear = new Date().getFullYear();
   .footer-top {
     justify-content: space-between;
     gap: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 1.75rem;
   }
 
   .footer-name {
-    color: #ffffff;
+    color: var(--text);
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.04em;
     text-decoration: none;
@@ -69,7 +71,7 @@ const currentYear = new Date().getFullYear();
 
   .footer-nav a,
   .footer-links a {
-    color: #b9c4d5;
+    color: var(--muted);
     font-size: 0.82rem;
     text-decoration: none;
     transition: color 160ms ease;
@@ -79,19 +81,19 @@ const currentYear = new Date().getFullYear();
   .footer-nav a:focus-visible,
   .footer-links a:hover,
   .footer-links a:focus-visible {
-    color: #ffffff;
+    color: var(--text);
   }
 
   .footer-bottom {
     justify-content: space-between;
     gap: 1rem;
-    border-top: 1px solid rgba(217, 223, 235, 0.16);
+    border-top: 1px solid var(--line);
     padding-top: 1.25rem;
   }
 
   .footer-bottom p {
     margin: 0;
-    color: #8f9caf;
+    color: var(--muted);
     font-size: 0.75rem;
   }
 
