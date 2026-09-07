@@ -36,7 +36,7 @@ const tags = await getAllTags();
       <section class="bio-section">
         {
           profile.description.map((paragraph) => (
-            <p class="bio-paragraph">{paragraph}</p>
+            <p class="bio-paragraph" set:html={paragraph} />
           ))
         }
       </section>
@@ -131,6 +131,19 @@ const tags = await getAllTags();
     color: var(--muted);
     font-size: 1.05rem;
     line-height: 1.85;
+  }
+
+  .bio-paragraph :global(strong) {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .bio-paragraph :global(u) {
+    color: var(--text);
+    font-weight: 600;
+    text-decoration-color: var(--text);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
   }
 
   .bio-label {

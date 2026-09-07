@@ -29,10 +29,12 @@ export const SITE_CONFIG = {
     role: '전자공학부 2학년',
     image: '/images/profile.png',
     email: 'thisiswoo04@gmail.com',
-    label: 'ELECTRICAL ENGINEERING · CIRCUITS · ELECTROMAGNETICS',
+    label: 'ELECTRICAL ENGINEERING · ELECTROMAGNETICS',
     description: [
-      '전자공학부에서 전기전자공학을 공부하고 있는 2학년 학생입니다. 회로이론과 전자기학을 중심으로 전공 기초를 다지고 있습니다.',
-      '이 공간에는 전공 수업에서 배운 내용과 스스로 정리한 개념, 문제를 풀며 얻은 생각들을 기록합니다.',
+      'Welcome to my website! \n',
+      'I am a second-year student majoring in Electronic Engineering at Jeonbuk National University.',
+      'I initially entered the university in 2023 as a student in the Department of Computer Science and Artificial Intelligence, and later transferred to Electronic Engineering in 2026.',
+      'I love creating things. During my freshman year, I wanted to build a website, so I learned foundational languages of web development such as HTML, CSS, and JS, and created a dormitory website for Jeonbuk National University. Building on the web knowledge I gained back then, I developed a seat availability notification program for course registration using vibe coding during the summer break of my sophomore year. Moving forward, I plan to enter the field of Physical AI to control actual physical spaces.',
     ],
   },
 
