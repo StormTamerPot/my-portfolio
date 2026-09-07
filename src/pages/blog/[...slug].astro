@@ -1,7 +1,9 @@
 ---
 import { render } from 'astro:content';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { getBlogPosts, type BlogPost as BlogPostData } from '../../utils/blog';
+import { encryptHtml, type LockedPayload } from '../../utils/postLock';
 
 export async function getStaticPaths() {
 	const posts = await getBlogPosts();
@@ -14,13 +16,25 @@ export async function getStaticPaths() {
 type Props = { post: BlogPostData };
 
 const { post } = Astro.props;
+const { password, ...postData } = post.entry.data;
 const { Content } = await render(post.entry);
+
+// A password in frontmatter means the body is encrypted at build time and
+// only decrypted client-side (see PasswordGate.astro) — the plaintext HTML
+// never reaches the static output for this post.
+let locked: LockedPayload | undefined;
+if (password) {
+	const container = await AstroContainer.create();
+	const html = await container.renderToString(Content, { partial: true });
+	locked = encryptHtml(html, password);
+}
 ---
 
 <BlogPost
-	{...post.entry.data}
+	{...postData}
 	categoryLabel={post.categoryLabel}
 	categoryHref={`/blog/category/${post.category}/`}
+	locked={locked}
 >
-	<Content />
+	{!locked && <Content />}
 </BlogPost>

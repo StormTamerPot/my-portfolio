@@ -6,10 +6,14 @@ import BaseHead from '../components/layout/BaseHead.astro';
 import Footer from '../components/layout/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/layout/Header.astro';
+import PasswordGate from '../components/PasswordGate.astro';
+import type { LockedPayload } from '../utils/postLock';
 
-type Props = CollectionEntry<'blog'>['data'] & {
+type Props = Omit<CollectionEntry<'blog'>['data'], 'password'> & {
 	categoryLabel: string;
 	categoryHref: string;
+	/** Present when the post is password-protected — see postLock.ts. */
+	locked?: LockedPayload;
 };
 
 const {
@@ -20,6 +24,7 @@ const {
 	heroImage,
 	categoryLabel,
 	categoryHref,
+	locked,
 } = Astro.props;
 ---
 
@@ -59,9 +64,18 @@ const {
 					)
 				}
 
-				<div class="prose">
-					<slot />
-				</div>
+				{
+					locked ? (
+						<>
+							<PasswordGate payload={locked} />
+							<div class="prose" id="post-gate-content" hidden />
+						</>
+					) : (
+						<div class="prose">
+							<slot />
+						</div>
+					)
+				}
 			</article>
 		</main>
 		<Footer />

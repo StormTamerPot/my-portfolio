@@ -1,6 +1,6 @@
 // Single source of truth for blog category ids, shared with the content
 // collection schema in `content.config.ts` so the two can never drift apart.
-export const BLOG_CATEGORY_IDS = ['electromagnetics', 'circuit-theory'] as const;
+export const BLOG_CATEGORY_IDS = ['microelectronics', 'circuit-theory'] as const;
 
 export type BlogCategoryId = (typeof BLOG_CATEGORY_IDS)[number];
 
@@ -8,13 +8,13 @@ const BLOG_CATEGORY_META: Record<
   BlogCategoryId,
   { label: string; description: string }
 > = {
-  electromagnetics: {
-    label: 'Electromagnetics',
-    description: '전기장, 자기장, 맥스웰 방정식 등 전자기학 이론을 정리합니다.',
+  'microelectronics': {
+    label: 'Microelectronics',
+    description: '전자회로 문제 풀이',
   },
   'circuit-theory': {
     label: 'Circuit Theory',
-    description: '옴의 법칙, 커패시터와 인덕터 등 회로 해석 이론을 정리합니다.',
+    description: '회로이론 문제 풀이',
   },
 };
 
@@ -78,7 +78,7 @@ export const SITE_CONFIG = {
     {
       id: 'all' as const,
       label: 'All',
-      description: '전자공학 전공 수업과 스스로 공부한 내용을 정리한 기록입니다.',
+      description: '열공해 봅시다.',
     },
     ...BLOG_CATEGORY_IDS.map((id) => ({ id, ...BLOG_CATEGORY_META[id] })),
   ],

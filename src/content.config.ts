@@ -24,6 +24,12 @@ const blog = defineCollection({
       // Marks a post as a highlight; not currently surfaced anywhere in the UI.
       featured: z.boolean().default(false),
       tags: z.array(z.string()).default([]),
+      // If set, the post body is encrypted at build time with this password
+      // (see src/utils/postLock.ts) and only decrypted client-side once the
+      // reader enters it correctly. The plaintext stays in this file, so
+      // whoever can read the repo can read it too — this only gates casual
+      // visitors of the built site, not anyone with repo access.
+      password: z.string().optional(),
     }),
 });
 

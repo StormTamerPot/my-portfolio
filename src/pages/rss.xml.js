@@ -8,9 +8,9 @@ export async function GET(context) {
 		title: SITE_CONFIG.site.title,
 		description: SITE_CONFIG.site.description,
 		site: context.site,
-		items: posts.map((post) => ({
-			...post.entry.data,
-			link: post.href,
-		})),
+		items: posts.map((post) => {
+			const { password, ...data } = post.entry.data;
+			return { ...data, link: post.href };
+		}),
 	});
 }

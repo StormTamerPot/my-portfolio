@@ -4,6 +4,7 @@ description: '저항 회로를 해석할 때 가장 기본이 되는 옴의 법�
 pubDate: 2026-08-30
 featured: true
 tags: ['Ohms Law', 'Kirchhoffs Laws', 'DC Circuits']
+password: '040224'
 ---
 
 전자공학 전공 수업에서 회로 해석을 시작할 때 가장 먼저 배우는 것이 옴의 법칙과 키르히호프의 법칙입니다. 이 글에서는 두 법칙을 정리합니다.
