@@ -1,0 +1,275 @@
+---
+import { SITE_CONFIG } from '../config/site';
+
+const { gpaScale, gpaHistory } = SITE_CONFIG.academics;
+
+const values = gpaHistory
+  .map((entry) => entry.gpa)
+  .filter((gpa): gpa is number => gpa != null);
+
+const yMax = gpaScale;
+// Round the floor down to the nearest 0.5 below the lowest score, so the
+// chart always has a little headroom under the worst term.
+const yMin = Math.max(0, Math.floor((Math.min(...values) - 0.5) * 2) / 2);
+
+const ticks: number[] = [];
+for (let t = yMin; t <= yMax + 1e-9; t += 0.5) ticks.push(t);
+
+const width = 640;
+const height = 280;
+const marginLeft = 42;
+const marginRight = 18;
+const marginTop = 50;
+const marginBottom = 34;
+const plotWidth = width - marginLeft - marginRight;
+const plotHeight = height - marginTop - marginBottom;
+
+const stepX = plotWidth / (gpaHistory.length - 1);
+const xAt = (i: number) => marginLeft + i * stepX;
+const yAt = (gpa: number) =>
+  marginTop + ((yMax - gpa) / (yMax - yMin)) * plotHeight;
+
+type ChartPoint = (typeof gpaHistory)[number] & { x: number; y: number | null };
+
+const points: ChartPoint[] = gpaHistory.map((entry, i) => ({
+  ...entry,
+  x: xAt(i),
+  y: entry.gpa != null ? yAt(entry.gpa) : null,
+}));
+
+const linePoints = points.filter(
+  (p): p is ChartPoint & { y: number; gpa: number } => p.y != null,
+);
+const linePath = linePoints
+  .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+  .join(' ');
+
+const baselineY = marginTop + plotHeight;
+const areaPath =
+  linePoints.length > 0
+    ? `${linePath} L ${linePoints[linePoints.length - 1].x} ${baselineY} L ${linePoints[0].x} ${baselineY} Z`
+    : '';
+
+const pendingY = marginTop + plotHeight / 2;
+---
+
+<section class="gpa-section">
+  <p class="gpa-kicker">ACADEMIC RECORD</p>
+  <h2>GPA 추이</h2>
+
+  <div class="gpa-chart-scroll">
+    <svg
+      class="gpa-chart"
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={`학기별 평점 추이. ${gpaHistory
+        .map((e) => `${e.term} ${e.gpa != null ? e.gpa.toFixed(2) : '진행중'}`)
+        .join(', ')}`}
+    >
+      {ticks.map((tick) => (
+        <g>
+          <line
+            x1={marginLeft}
+            y1={yAt(tick)}
+            x2={width - marginRight}
+            y2={yAt(tick)}
+            class="gpa-grid"
+          />
+          <text
+            x={marginLeft - 10}
+            y={yAt(tick)}
+            class="gpa-axis-label"
+            text-anchor="end"
+            dominant-baseline="middle"
+          >
+            {tick.toFixed(1)}
+          </text>
+        </g>
+      ))}
+
+      {areaPath && <path d={areaPath} class="gpa-area" />}
+      {linePath && <path d={linePath} class="gpa-line" />}
+
+      {points.map((p, i) => (
+        <text
+          x={p.x}
+          y={height - 10}
+          class="gpa-axis-label"
+          text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+        >
+          {p.short}
+        </text>
+      ))}
+
+      {points.map((p, i) =>
+        p.y != null ? (
+          <g
+            class="gpa-point"
+            tabindex="0"
+            role="img"
+            aria-label={`${p.term}: ${p.gpa!.toFixed(2)}${
+              p.majorGpa ? `, 전공 ${p.majorGpa.toFixed(2)}` : ''
+            }`}
+          >
+            <circle cx={p.x} cy={p.y} r="14" class="gpa-hit" />
+            <circle cx={p.x} cy={p.y} r="4" class="gpa-dot" />
+
+            {p.majorGpa && (
+              <text
+                x={p.x}
+                y={p.y + 20}
+                class="gpa-annotation"
+                text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+              >
+                전공 {p.majorGpa.toFixed(2)}
+              </text>
+            )}
+
+            <g
+              class="gpa-tooltip"
+              transform={`translate(${p.x + (i === 0 ? 34 : i === points.length - 1 ? -34 : 0)}, ${p.y - 18})`}
+            >
+              <rect x="-38" y="-30" width="76" height="34" rx="6" class="gpa-tooltip-bg" />
+              <text x="0" y="-17" class="gpa-tooltip-term" text-anchor="middle">{p.short}</text>
+              <text x="0" y="-4" class="gpa-tooltip-value" text-anchor="middle">{p.gpa!.toFixed(2)}</text>
+            </g>
+          </g>
+        ) : (
+          <g
+            class="gpa-point gpa-point-pending"
+            tabindex="0"
+            role="img"
+            aria-label={`${p.term}: 진행중`}
+          >
+            <circle cx={p.x} cy={pendingY} r="4" class="gpa-dot-pending" />
+            <text
+              x={p.x}
+              y={pendingY - 14}
+              class="gpa-annotation"
+              text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+            >
+              진행중
+            </text>
+          </g>
+        ),
+      )}
+    </svg>
+  </div>
+</section>
+
+<style>
+  .gpa-section {
+    max-width: 58rem;
+    margin: 0 auto;
+    padding: 0 0 clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .gpa-kicker {
+    margin: 0 0 0.6rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .gpa-section h2 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+    letter-spacing: -0.03em;
+  }
+
+  .gpa-chart-scroll {
+    overflow-x: auto;
+  }
+
+  .gpa-chart {
+    display: block;
+    width: 100%;
+    min-width: 30rem;
+    height: auto;
+  }
+
+  .gpa-grid {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .gpa-axis-label {
+    fill: var(--muted);
+    font-family: var(--font-sans);
+    font-size: 11px;
+  }
+
+  .gpa-area {
+    fill: var(--accent);
+    fill-opacity: 0.08;
+    stroke: none;
+  }
+
+  .gpa-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .gpa-dot {
+    fill: var(--accent);
+    stroke: var(--bg);
+    stroke-width: 2;
+  }
+
+  .gpa-dot-pending {
+    fill: var(--bg);
+    stroke: var(--muted);
+    stroke-width: 1.5;
+  }
+
+  .gpa-hit {
+    fill: transparent;
+    cursor: pointer;
+  }
+
+  .gpa-annotation {
+    fill: var(--muted);
+    font-family: var(--font-sans);
+    font-size: 10px;
+  }
+
+  .gpa-point:focus {
+    outline: none;
+  }
+
+  .gpa-tooltip {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+  }
+
+  .gpa-point:hover .gpa-tooltip,
+  .gpa-point:focus-visible .gpa-tooltip {
+    opacity: 1;
+  }
+
+  .gpa-tooltip-bg {
+    fill: var(--surface);
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .gpa-tooltip-term {
+    fill: var(--muted);
+    font-family: var(--font-sans);
+    font-size: 9px;
+  }
+
+  .gpa-tooltip-value {
+    fill: var(--text);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+  }
+</style>

@@ -18,6 +18,27 @@ const BLOG_CATEGORY_META: Record<
   },
 };
 
+export interface GpaTerm {
+  /** Full term name, used in the tooltip/table (e.g. "1학년 1학기"). */
+  term: string;
+  /** Compact axis label (e.g. "1-1", "1-여름"). */
+  short: string;
+  /** null for a term still in progress — rendered as a pending marker. */
+  gpa: number | null;
+  /** Optional major-only GPA, shown as a secondary annotation on that point. */
+  majorGpa?: number;
+}
+
+// Append a new entry each semester — GpaChart.astro re-derives the chart's
+// scale and gridlines from whatever values are here.
+// Summer-term GPA is intentionally excluded from this list — it isn't part
+// of the regular semester progression this chart is meant to show.
+const GPA_HISTORY: GpaTerm[] = [
+  { term: '1학년 1학기', short: '1-1', gpa: 3.91 },
+  { term: '1학년 2학기', short: '1-2', gpa: 4.18 },
+  { term: '2학년 1학기', short: '2-1', gpa: 4.28, majorGpa: 4.38 },
+];
+
 export const SITE_CONFIG = {
   site: {
     title: 'Lee Geonwoo',
@@ -38,13 +59,18 @@ export const SITE_CONFIG = {
     ],
   },
 
+  academics: {
+    // GPA is on a 4.5 scale — GpaChart.astro reads this for the axis max.
+    gpaScale: 4.5,
+    gpaHistory: GPA_HISTORY,
+  },
+
   links: {
     github: 'https://github.com/StormTamerPot',
   },
 
   navigation: [
     { href: '/', label: 'About' },
-    { href: '/story', label: 'Story' },
     { href: '/blog', label: 'Notes' },
   ],
 
