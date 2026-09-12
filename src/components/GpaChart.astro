@@ -40,9 +40,59 @@ const points: ChartPoint[] = gpaHistory.map((entry, i) => ({
 const linePoints = points.filter(
   (p): p is ChartPoint & { y: number; gpa: number } => p.y != null,
 );
-const linePath = linePoints
-  .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-  .join(' ');
+
+// Monotone cubic interpolation (Fritsch–Carlson): passes exactly through
+// every point — unlike a naive midpoint-smoothed curve, interior dots sit
+// precisely on the line — while staying monotone within each segment, so
+// the curve never bulges past the values on either side of it.
+function monotoneCubicPath(pts: { x: number; y: number }[]): string {
+  const n = pts.length;
+  if (n === 0) return '';
+  if (n === 1) return `M ${pts[0].x} ${pts[0].y}`;
+  if (n === 2) return `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y}`;
+
+  const dx: number[] = [];
+  const slope: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    dx[i] = pts[i + 1].x - pts[i].x;
+    slope[i] = (pts[i + 1].y - pts[i].y) / dx[i];
+  }
+
+  const tangent: number[] = new Array(n);
+  tangent[0] = slope[0];
+  tangent[n - 1] = slope[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    tangent[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+  }
+
+  for (let i = 0; i < n - 1; i++) {
+    if (slope[i] === 0) {
+      tangent[i] = 0;
+      tangent[i + 1] = 0;
+      continue;
+    }
+    const alpha = tangent[i] / slope[i];
+    const beta = tangent[i + 1] / slope[i];
+    const h = Math.hypot(alpha, beta);
+    if (h > 3) {
+      const tau = 3 / h;
+      tangent[i] = tau * alpha * slope[i];
+      tangent[i + 1] = tau * beta * slope[i];
+    }
+  }
+
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < n - 1; i++) {
+    const c1x = pts[i].x + dx[i] / 3;
+    const c1y = pts[i].y + (tangent[i] * dx[i]) / 3;
+    const c2x = pts[i + 1].x - dx[i] / 3;
+    const c2y = pts[i + 1].y - (tangent[i + 1] * dx[i]) / 3;
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${pts[i + 1].x} ${pts[i + 1].y}`;
+  }
+  return d;
+}
+
+const linePath = monotoneCubicPath(linePoints);
 
 const baselineY = marginTop + plotHeight;
 const areaPath =
@@ -51,111 +101,132 @@ const areaPath =
     : '';
 
 const pendingY = marginTop + plotHeight / 2;
+const latest = linePoints[linePoints.length - 1];
 ---
 
 <section class="gpa-section">
-  <p class="gpa-kicker">ACADEMIC RECORD</p>
-  <h2>GPA 추이</h2>
+  <div class="gpa-card">
+    <div class="gpa-header">
+      <div>
+        <p class="gpa-kicker">ACADEMIC RECORD</p>
+        <h2>GPA</h2>
+      </div>
 
-  <div class="gpa-chart-scroll">
-    <svg
-      class="gpa-chart"
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-label={`학기별 평점 추이. ${gpaHistory
-        .map((e) => `${e.term} ${e.gpa != null ? e.gpa.toFixed(2) : '진행중'}`)
-        .join(', ')}`}
-    >
-      {ticks.map((tick) => (
-        <g>
-          <line
-            x1={marginLeft}
-            y1={yAt(tick)}
-            x2={width - marginRight}
-            y2={yAt(tick)}
-            class="gpa-grid"
-          />
+      {latest && (
+        <div class="gpa-stat">
+          <span class="gpa-stat-value">{latest.gpa.toFixed(2)}</span>
+          <span class="gpa-stat-label">{latest.term}</span>
+        </div>
+      )}
+    </div>
+
+    <div class="gpa-chart-scroll">
+      <svg
+        class="gpa-chart"
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        role="img"
+        aria-label={`학기별 평점 추이. ${gpaHistory
+          .map((e) => `${e.term} ${e.gpa != null ? e.gpa.toFixed(2) : '진행중'}`)
+          .join(', ')}`}
+      >
+        <defs>
+          <linearGradient id="gpaAreaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.16" />
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+
+        {ticks.map((tick) => (
+          <g>
+            <line
+              x1={marginLeft}
+              y1={yAt(tick)}
+              x2={width - marginRight}
+              y2={yAt(tick)}
+              class="gpa-grid"
+            />
+            <text
+              x={marginLeft - 10}
+              y={yAt(tick)}
+              class="gpa-axis-label"
+              text-anchor="end"
+              dominant-baseline="middle"
+            >
+              {tick.toFixed(1)}
+            </text>
+          </g>
+        ))}
+
+        {areaPath && <path d={areaPath} class="gpa-area" />}
+        {linePath && <path d={linePath} class="gpa-line" />}
+
+        {points.map((p, i) => (
           <text
-            x={marginLeft - 10}
-            y={yAt(tick)}
+            x={p.x}
+            y={height - 10}
             class="gpa-axis-label"
-            text-anchor="end"
-            dominant-baseline="middle"
+            text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
           >
-            {tick.toFixed(1)}
+            {p.short}
           </text>
-        </g>
-      ))}
+        ))}
 
-      {areaPath && <path d={areaPath} class="gpa-area" />}
-      {linePath && <path d={linePath} class="gpa-line" />}
+        {points.map((p, i) =>
+          p.y != null ? (
+            <g
+              class="gpa-point"
+              tabindex="0"
+              role="img"
+              aria-label={`${p.term}: ${p.gpa!.toFixed(2)}${
+                p.majorGpa ? `, 전공 ${p.majorGpa.toFixed(2)}` : ''
+              }`}
+            >
+              <circle cx={p.x} cy={p.y} r="14" class="gpa-hit" />
+              <circle cx={p.x} cy={p.y} r={i === points.length - 1 ? 5 : 4} class="gpa-dot" />
 
-      {points.map((p, i) => (
-        <text
-          x={p.x}
-          y={height - 10}
-          class="gpa-axis-label"
-          text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
-        >
-          {p.short}
-        </text>
-      ))}
+              {p.majorGpa && (
+                <text
+                  x={p.x}
+                  y={p.y + 20}
+                  class="gpa-annotation"
+                  text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+                >
+                  전공 {p.majorGpa.toFixed(2)}
+                </text>
+              )}
 
-      {points.map((p, i) =>
-        p.y != null ? (
-          <g
-            class="gpa-point"
-            tabindex="0"
-            role="img"
-            aria-label={`${p.term}: ${p.gpa!.toFixed(2)}${
-              p.majorGpa ? `, 전공 ${p.majorGpa.toFixed(2)}` : ''
-            }`}
-          >
-            <circle cx={p.x} cy={p.y} r="14" class="gpa-hit" />
-            <circle cx={p.x} cy={p.y} r="4" class="gpa-dot" />
-
-            {p.majorGpa && (
+              <g
+                class="gpa-tooltip"
+                transform={`translate(${p.x + (i === 0 ? 34 : i === points.length - 1 ? -34 : 0)}, ${p.y - 18})`}
+              >
+                <rect x="-38" y="-30" width="76" height="34" rx="6" class="gpa-tooltip-bg" />
+                <text x="0" y="-17" class="gpa-tooltip-term" text-anchor="middle">{p.short}</text>
+                <text x="0" y="-4" class="gpa-tooltip-value" text-anchor="middle">{p.gpa!.toFixed(2)}</text>
+              </g>
+            </g>
+          ) : (
+            <g
+              class="gpa-point gpa-point-pending"
+              tabindex="0"
+              role="img"
+              aria-label={`${p.term}: 진행중`}
+            >
+              <circle cx={p.x} cy={pendingY} r="4" class="gpa-dot-pending" />
               <text
                 x={p.x}
-                y={p.y + 20}
+                y={pendingY - 14}
                 class="gpa-annotation"
                 text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
               >
-                전공 {p.majorGpa.toFixed(2)}
+                진행중
               </text>
-            )}
-
-            <g
-              class="gpa-tooltip"
-              transform={`translate(${p.x + (i === 0 ? 34 : i === points.length - 1 ? -34 : 0)}, ${p.y - 18})`}
-            >
-              <rect x="-38" y="-30" width="76" height="34" rx="6" class="gpa-tooltip-bg" />
-              <text x="0" y="-17" class="gpa-tooltip-term" text-anchor="middle">{p.short}</text>
-              <text x="0" y="-4" class="gpa-tooltip-value" text-anchor="middle">{p.gpa!.toFixed(2)}</text>
             </g>
-          </g>
-        ) : (
-          <g
-            class="gpa-point gpa-point-pending"
-            tabindex="0"
-            role="img"
-            aria-label={`${p.term}: 진행중`}
-          >
-            <circle cx={p.x} cy={pendingY} r="4" class="gpa-dot-pending" />
-            <text
-              x={p.x}
-              y={pendingY - 14}
-              class="gpa-annotation"
-              text-anchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
-            >
-              진행중
-            </text>
-          </g>
-        ),
-      )}
-    </svg>
+          ),
+        )}
+      </svg>
+    </div>
   </div>
 </section>
 
@@ -166,18 +237,55 @@ const pendingY = marginTop + plotHeight / 2;
     padding: 0 0 clamp(3rem, 6vw, 4.5rem);
   }
 
+  .gpa-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  .gpa-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
   .gpa-kicker {
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.5rem;
     color: var(--muted);
     font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.14em;
   }
 
-  .gpa-section h2 {
-    margin: 0 0 1.5rem;
+  .gpa-header h2 {
+    margin: 0;
     font-size: clamp(1.3rem, 2.4vw, 1.6rem);
     letter-spacing: -0.03em;
+  }
+
+  .gpa-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+  }
+
+  .gpa-stat-value {
+    color: var(--text);
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .gpa-stat-label {
+    color: var(--muted);
+    font-size: 0.78rem;
   }
 
   .gpa-chart-scroll {
@@ -203,8 +311,7 @@ const pendingY = marginTop + plotHeight / 2;
   }
 
   .gpa-area {
-    fill: var(--accent);
-    fill-opacity: 0.08;
+    fill: url(#gpaAreaGradient);
     stroke: none;
   }
 
@@ -220,6 +327,7 @@ const pendingY = marginTop + plotHeight / 2;
     fill: var(--accent);
     stroke: var(--bg);
     stroke-width: 2;
+    transition: r 160ms ease;
   }
 
   .gpa-dot-pending {
@@ -231,6 +339,11 @@ const pendingY = marginTop + plotHeight / 2;
   .gpa-hit {
     fill: transparent;
     cursor: pointer;
+  }
+
+  .gpa-point:hover .gpa-dot,
+  .gpa-point:focus-visible .gpa-dot {
+    r: 6;
   }
 
   .gpa-annotation {
@@ -271,5 +384,11 @@ const pendingY = marginTop + plotHeight / 2;
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 700;
+  }
+
+  @media (max-width: 30rem) {
+    .gpa-stat {
+      align-items: flex-start;
+    }
   }
 </style>

@@ -1,27 +1,34 @@
 ---
 import { SITE_CONFIG } from '../../config/site';
 
-const { profile, links, navigation } = SITE_CONFIG;
+const { site, profile, links, navigation } = SITE_CONFIG;
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-top">
-      <a class="footer-name" href="/">{profile.name}</a>
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a class="footer-name" href="/">{profile.name}</a>
+        <p class="footer-tagline">{site.description}</p>
+      </div>
 
-      <nav class="footer-nav" aria-label="푸터 메뉴">
-        {navigation.map((item) => <a href={item.href}>{item.label}</a>)}
-      </nav>
+      <div class="footer-columns">
+        <nav class="footer-nav" aria-label="푸터 메뉴">
+          <p class="footer-heading">Menu</p>
+          {navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+
+        <div class="footer-social">
+          <p class="footer-heading">Connect</p>
+          <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
+          <a href={`mailto:${profile.email}`}>Email</a>
+        </div>
+      </div>
     </div>
 
     <div class="footer-bottom">
       <p>© {currentYear} {profile.name}. All rights reserved.</p>
-
-      <div class="footer-links">
-        <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
-        <a href={`mailto:${profile.email}`}>Email</a>
-      </div>
     </div>
   </div>
 </footer>
@@ -30,7 +37,7 @@ const currentYear = new Date().getFullYear();
   .site-footer {
     margin-top: 0;
     border-top: 1px solid var(--line);
-    background: var(--bg);
+    background: var(--surface-muted);
     color: var(--text-secondary);
     transition: background-color 180ms ease, border-color 180ms ease;
   }
@@ -38,57 +45,77 @@ const currentYear = new Date().getFullYear();
   .footer-inner {
     width: min(100% - 4rem, var(--page-width));
     margin: 0 auto;
-    padding: 2.5rem 0;
+    padding: clamp(2.1rem, 4.2vw, 2.8rem) 0 clamp(1.4rem, 2.8vw, 1.75rem);
   }
 
-  .footer-top,
-  .footer-bottom,
-  .footer-links,
-  .footer-nav {
+  .footer-main {
     display: flex;
-    align-items: center;
-  }
-
-  .footer-top {
+    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 2.5rem;
     padding-bottom: 1.75rem;
   }
 
+  .footer-brand {
+    max-width: 22rem;
+  }
+
   .footer-name {
+    display: inline-block;
     color: var(--text);
     font-family: var(--font-display);
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     font-weight: 700;
     letter-spacing: -0.04em;
     text-decoration: none;
   }
 
-  .footer-nav {
-    flex-wrap: wrap;
-    gap: 1.25rem;
+  .footer-tagline {
+    margin: 0.4rem 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .footer-columns {
+    display: flex;
+    gap: 3.5rem;
+  }
+
+  .footer-heading {
+    margin: 0 0 0.6rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .footer-nav,
+  .footer-social {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
 
   .footer-nav a,
-  .footer-links a {
-    color: var(--muted);
-    font-size: 0.82rem;
+  .footer-social a {
+    width: fit-content;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
     text-decoration: none;
     transition: color 160ms ease;
   }
 
   .footer-nav a:hover,
   .footer-nav a:focus-visible,
-  .footer-links a:hover,
-  .footer-links a:focus-visible {
+  .footer-social a:hover,
+  .footer-social a:focus-visible {
     color: var(--text);
   }
 
   .footer-bottom {
-    justify-content: space-between;
-    gap: 1rem;
     border-top: 1px solid var(--line);
-    padding-top: 1.25rem;
+    padding-top: 1rem;
   }
 
   .footer-bottom p {
@@ -97,25 +124,19 @@ const currentYear = new Date().getFullYear();
     font-size: 0.75rem;
   }
 
-  .footer-links {
-    gap: 1rem;
-  }
-
   @media (max-width: 38rem) {
     .footer-inner {
       width: min(100% - 2rem, var(--page-width));
-      padding-top: 2rem;
     }
 
-    .footer-top,
-    .footer-bottom {
-      align-items: flex-start;
+    .footer-main {
       flex-direction: column;
+      gap: 1.4rem;
+      padding-bottom: 1.4rem;
     }
 
-    .footer-top {
-      gap: 1.25rem;
-      padding-bottom: 1.5rem;
+    .footer-columns {
+      gap: 2.5rem;
     }
   }
 </style>
