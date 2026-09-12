@@ -4,9 +4,8 @@ description: ''
 pubDate: 2026-09-07
 featured: true
 tags: ['microelectronics']
-# heroImage: './problem-1.png'
+heroImage: './problem-1.png'
 ---
-
 ## - Problem
 
 ![문제1](./problem-1.png)

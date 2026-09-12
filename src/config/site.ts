@@ -55,7 +55,6 @@ export const SITE_CONFIG = {
       'Welcome to my website! \n',
       'I am a second-year student majoring in Electronic Engineering at Jeonbuk National University.',
       'I initially entered the university in 2023 as a student in the Department of Computer Science and Artificial Intelligence, and later transferred to Electronic Engineering in 2026.',
-      'I love creating things. During my freshman year, I wanted to build a website, so I learned foundational languages of web development such as HTML, CSS, and JS, and created a dormitory website for Jeonbuk National University. Building on the web knowledge I gained back then, I developed a seat availability notification program for course registration using vibe coding during the summer break of my sophomore year. Moving forward, I plan to enter the field of Physical AI to control actual physical spaces.',
     ],
   },
 

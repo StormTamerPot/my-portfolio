@@ -48,6 +48,7 @@ const isActive = (href: string) =>
     background: var(--bg);
     background: color-mix(in srgb, var(--bg) 85%, transparent);
     backdrop-filter: blur(12px);
+    font-family: var(--font-header);
     transition: background-color 180ms ease, border-color 180ms ease;
   }
 
@@ -68,7 +69,6 @@ const isActive = (href: string) =>
 
   .site-name {
     color: var(--text);
-    font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: -0.04em;
