@@ -1,7 +1,7 @@
 ---
 import { SITE_CONFIG } from '../../config/site';
 
-const { site, profile, links, navigation } = SITE_CONFIG;
+const { profile, links, navigation } = SITE_CONFIG;
 const currentYear = new Date().getFullYear();
 ---
 
@@ -10,7 +10,6 @@ const currentYear = new Date().getFullYear();
     <div class="footer-main">
       <div class="footer-brand">
         <a class="footer-name" href="/">{profile.name}</a>
-        <p class="footer-tagline">{site.description}</p>
       </div>
 
       <div class="footer-columns">
@@ -39,7 +38,20 @@ const currentYear = new Date().getFullYear();
     border-top: 1px solid var(--line);
     background: var(--surface-muted);
     color: var(--text-secondary);
-    transition: background-color 180ms ease, border-color 180ms ease;
+    transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+  }
+
+  /* Light theme only: classic navy footer, visually distinct from the
+     white page above it. Dark theme keeps the default surface-muted
+     footer defined above. Overriding the tokens here (rather than every
+     individual rule) lets every existing footer rule below pick up the
+     navy palette automatically. */
+  :root[data-theme="light"] .site-footer {
+    --surface-muted: #0f1b3d;
+    --text: #f5f7fb;
+    --text-secondary: #c3cbe0;
+    --muted: #92a0c4;
+    --line: #24345c;
   }
 
   .footer-inner {
@@ -68,13 +80,6 @@ const currentYear = new Date().getFullYear();
     font-weight: 700;
     letter-spacing: -0.04em;
     text-decoration: none;
-  }
-
-  .footer-tagline {
-    margin: 0.4rem 0 0;
-    color: var(--muted);
-    font-size: 0.88rem;
-    line-height: 1.6;
   }
 
   .footer-columns {
